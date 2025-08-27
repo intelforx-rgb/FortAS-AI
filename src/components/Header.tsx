@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen, sel
               <Factory className="text-white" size={20} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">CemtrAS AI</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">PlantAS AI</h1>
               <p className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
                 {selectedRole} Expert
               </p>

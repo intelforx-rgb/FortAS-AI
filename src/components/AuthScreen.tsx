@@ -149,12 +149,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onComplete }) => {
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-yellow-500">
               <img 
                 src="/untitled (10).jpeg" 
-                alt="CemtrAS AI"
+                alt="PlantAS AI"
                 className="w-full h-full object-cover"
               />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2"> CemtrAS AI</h1>
+          <h1 className="text-3xl font-bold text-white mb-2"> PlantAS AI</h1>
           <p className="text-slate-300">Secure access to your technical AI assistant</p>
         </div>
 

@@ -21,42 +21,42 @@ const roles: {
     label: 'Operations & Maintenance', 
     icon: <Factory size={18} />, 
     color: 'border-yellow-500 bg-yellow-50 text-yellow-700',
-    description: 'Machinery troubleshooting & process optimization'
+    description: 'Plant machinery troubleshooting & process optimization'
   },
   { 
     value: 'Project Management', 
     label: 'Project Management', 
     icon: <BarChart3 size={18} />, 
     color: 'border-blue-500 bg-blue-50 text-blue-700',
-    description: 'EPC scheduling & resource planning'
+    description: 'Project scheduling & resource planning'
   },
   { 
     value: 'Sales & Marketing', 
     label: 'Sales & Marketing', 
     icon: <TrendingUp size={18} />, 
     color: 'border-green-500 bg-green-50 text-green-700',
-    description: 'Market analysis & customer strategies'
+    description: 'Industrial market analysis & customer strategies'
   },
   { 
     value: 'Procurement', 
     label: 'Procurement & Supply Chain', 
     icon: <ShoppingCart size={18} />, 
     color: 'border-purple-500 bg-purple-50 text-purple-700',
-    description: 'Vendor negotiations & inventory optimization'
+    description: 'Industrial vendor negotiations & inventory optimization'
   },
   { 
     value: 'Erection & Commissioning', 
     label: 'Erection & Commissioning', 
     icon: <Wrench size={18} />, 
     color: 'border-red-500 bg-red-50 text-red-700',
-    description: 'Installation sequencing & safety compliance'
+    description: 'Plant installation sequencing & safety compliance'
   },
   { 
     value: 'Engineering & Design', 
     label: 'Engineering & Design', 
     icon: <Settings size={18} />, 
     color: 'border-orange-500 bg-orange-50 text-orange-700',
-    description: 'Process flow design & equipment selection'
+    description: 'Industrial process flow design & equipment selection'
   },
   { 
     value: 'General AI', 

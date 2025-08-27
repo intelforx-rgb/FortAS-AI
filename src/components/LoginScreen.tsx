@@ -24,19 +24,19 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         {/* Brand Name & Tagline */}
         <div className="mb-6">
           <h1 className="text-slate-900 font-extrabold text-5xl md:text-6xl tracking-tight animate-fade-in-up">
-            CemtrAS <span className="text-blue-700">AI</span>
+            PlantAS <span className="text-blue-700">AI</span>
           </h1>
           <p className="text-yellow-600 text-xl md:text-2xl font-semibold mt-3 animate-fade-in">
-            AI-Driven Engineering for Cement Excellence
+            AI-Driven Engineering for Industrial Plant Excellence
           </p>
         </div>
 
         {/* Welcome Message */}
         <h2 className="text-4xl font-bold text-slate-800 leading-tight animate-fade-in-up delay-200">
-          Welcome to CemtrAS AI
+          Welcome to PlantAS AI
         </h2>
         <p className="text-slate-600 text-lg animate-fade-in delay-300">
-          <span className="text-blue-700"> AI-powered Cement Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class cement plants</span>
+          <span className="text-blue-700"> AI-powered Industrial Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class industrial plants</span>
         </p>
       </div>
 
@@ -139,16 +139,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-yellow-500 shadow-2xl mx-auto mb-6">
             <img
               src="/untitled (10).jpeg"
-              alt="CemtrAS AI | AI-Driven Engineering for Cement Excellence by Vipul Sharma"
+              alt="PlantAS AI | AI-Driven Engineering for Industrial Plant Excellence by Vipul Sharma"
               className="w-full h-full object-cover"
             />
           </div>
           <h2 className="text-2xl font-bold text-slate-800">Vipul Sharma</h2>
           <p className="text-yellow-600 font-semibold text-lg mb-1">Founder</p>
           <p className="text-slate-600 text-base leading-relaxed">
-            We are an AI-powered Cement Plant Operations, Safety & Efficiency
+            We are an AI-powered Industrial Plant Operations, Safety & Efficiency
             Expert — your trusted partner in building and optimizing world-class
-            cement plants.
+            industrial plants.
           </p>
         </div>
       </div>
@@ -158,7 +158,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         <p className="text-slate-500 text-sm">
           Powered by{" "}
           <span className="text-blue-600 font-bold">Advanced AI Technology</span>{" "}
-          | © 2024 Cement Plant Expert
+          | © 2024 Industrial Plant Expert
         </p>
       </div>
     </div>
