@@ -25,7 +25,7 @@ export const LoadingMessage: React.FC = () => {
           </div>
         </div>
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">
-          TECHNICAL ASSISTANT • Processing...
+          AI by VS • Processing...
         </div>
       </div>
     </div>
