@@ -17,6 +17,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const { isAuthenticated } = useAuth();
   const [input, setInput] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<FileUpload[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
@@ -32,7 +33,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleFiles = async (files: File[]) => {
-    if (!isAuthenticated || !onFileUpload) return;
+    if (!isAuthenticated) return;
 
     const validFiles = files.filter(file => {
       const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf';
@@ -61,7 +62,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       })
     );
 
-    onFileUpload(fileUploads);
+    setUploadedFiles(prev => [...prev, ...fileUploads]);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -85,6 +86,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
+  const onRemoveFile = (fileId: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+  };
+
   return (
     <div className="space-y-3">
       {/* Uploaded Files Display */}
@@ -99,7 +104,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 {file.name}
               </span>
               <button
-                onClick={() => onRemoveFile?.(file.id)}
+                onClick={() => onRemoveFile(file.id)}
                 className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200"
               >
                 <X size={14} />
@@ -181,22 +186,5 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
     </div>
-  );
-};
-      </div>
-      
-      <button
-        type="submit"
-        disabled={!input.trim() || isLoading}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl 
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 
-                 disabled:opacity-50 disabled:cursor-not-allowed
-                 transition-all duration-200 flex items-center gap-2 
-                 font-semibold text-sm"
-      >
-        <Send size={16} />
-        <span className="hidden sm:inline">Send</span>
-      </button>
-    </form>
   );
 };
