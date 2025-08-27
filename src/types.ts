@@ -57,7 +57,8 @@ export interface FileUpload {
   name: string;
   type: string;
   size: number;
-  content: string;
+  content: string | ArrayBuffer;
+  url?: string;
   uploadDate: Date;
 }
 
