@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Factory className="text-white" size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">PlantAS AI</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">FortAS AI</h2>
                 <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
                   AI-Driven Engineering
                 </p>

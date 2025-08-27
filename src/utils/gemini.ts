@@ -39,7 +39,7 @@ const getGuestSystemInstruction = (role: UserRole | 'General AI'): string => {
   }
 
   const baseInstruction = `
-You are PlantAS AI by Vipul Sharma, AI-Driven Engineering for Industrial Plant Excellence.
+You are FortAS AI AI by Vipul Sharma, AI-Driven Engineering for Industrial Plant Excellence.
 
 CRITICAL INSTRUCTION:
 - Do NOT include section headers (UI will render them).

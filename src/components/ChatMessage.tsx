@@ -188,7 +188,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         </div>
         <div className={`text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium ${isUser ? 'text-right' : 'text-left'}`}>
-          {isUser ? 'YOU' : 'PlantAS AI'} • {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {isUser ? 'YOU' : 'FortAS AI'} • {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
     </div>

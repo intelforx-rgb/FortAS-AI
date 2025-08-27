@@ -24,7 +24,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         {/* Brand Name & Tagline */}
         <div className="mb-6">
           <h1 className="text-slate-900 font-extrabold text-5xl md:text-6xl tracking-tight animate-fade-in-up">
-            PlantAS <span className="text-blue-700">AI</span>
+            FortAS <span className="text-blue-700">AI</span>
           </h1>
           <p className="text-yellow-600 text-xl md:text-2xl font-semibold mt-3 animate-fade-in">
             AI-Driven Engineering for Industrial Plant Excellence
@@ -33,7 +33,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
         {/* Welcome Message */}
         <h2 className="text-4xl font-bold text-slate-800 leading-tight animate-fade-in-up delay-200">
-          Welcome to PlantAS AI
+          Welcome to FortAS AI
         </h2>
         <p className="text-slate-600 text-lg animate-fade-in delay-300">
           <span className="text-blue-700">AI-powered Industrial Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class industrial plants</span>
@@ -139,7 +139,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-yellow-500 shadow-2xl mx-auto mb-6">
             <img
               src="/untitled (10).jpeg"
-              alt="PlantAS AI | AI-Driven Engineering for Industrial Plant Excellence by Vipul Sharma"
+              alt="FortAS AI | AI-Driven Engineering for Industrial Plant Excellence by Vipul Sharma"
               className="w-full h-full object-cover"
             />
           </div>
