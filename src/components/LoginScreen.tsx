@@ -36,7 +36,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           Welcome to PlantAS AI
         </h2>
         <p className="text-slate-600 text-lg animate-fade-in delay-300">
-          <span className="text-blue-700"> AI-powered Industrial Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class industrial plants</span>
+          <span className="text-blue-700">AI-powered Industrial Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class industrial plants</span>
         </p>
       </div>
 

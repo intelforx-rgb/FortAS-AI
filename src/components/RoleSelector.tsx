@@ -21,7 +21,7 @@ const roles: {
     label: 'Operations & Maintenance', 
     icon: <Factory size={18} />, 
     color: 'border-yellow-500 bg-yellow-50 text-yellow-700',
-    description: 'Plant machinery troubleshooting & process optimization'
+    description: 'Industrial machinery troubleshooting & process optimization'
   },
   { 
     value: 'Project Management', 
