@@ -1,15 +1,38 @@
 import React from 'react';
-import { User, Bot, AlertTriangle, CheckCircle, Info, Target, BarChart3, Lightbulb, Shield } from 'lucide-react';
-import type { Message } from '../types';
+import { User, Bot, AlertTriangle, CheckCircle, Info, Target, BarChart3, Lightbulb, Shield, FileText, Image } from 'lucide-react';
+import type { Message, FileUpload } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ChatMessageProps {
   message: Message;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+  const { isAuthenticated } = useAuth();
   const isUser = message.role === 'user';
   
-  const renderStructuredContent = (content: string) => {
+  const renderStructuredContent = (content: string, isAuthenticatedUser: boolean) => {
+    // For authenticated users, render content naturally without structured sections
+    if (isAuthenticatedUser) {
+      return (
+        <div className="text-slate-700 dark:text-slate-300 leading-relaxed">
+          {content.split('\n').map((line, index) => {
+            const trimmedLine = line.trim();
+            if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+              return (
+                <div key={index} className="flex items-start gap-3 ml-4 mb-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <span>{trimmedLine.replace(/^[•\-*]\s*/, '')}</span>
+                </div>
+              );
+            }
+            return trimmedLine ? <p key={index} className="mb-2">{trimmedLine}</p> : null;
+          })}
+        </div>
+      );
+    }
+
+    // For guest users, maintain structured format
     // Split content by sections
     const sections = content.split(/(?=Section \d+:|Problem Understanding|Analysis|Actionable Recommendations|Compliance Notes|Cost & Efficiency)/g);
     
@@ -111,6 +134,30 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     });
   };
   
+  const renderFileAttachments = (files: FileUpload[]) => {
+    if (!files || files.length === 0) return null;
+
+    return (
+      <div className="mt-3 space-y-2">
+        {files.map((file) => (
+          <div key={file.id} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-2">
+            {file.type.startsWith('image/') ? (
+              <Image className="text-blue-500" size={16} />
+            ) : (
+              <FileText className="text-red-500" size={16} />
+            )}
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+              {file.name}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              ({(file.size / 1024).toFixed(1)} KB)
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
   return (
     <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} mb-6`}>
       <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
@@ -129,10 +176,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         }`}>
           <div className="text-sm leading-relaxed">
             {isUser ? (
-              <div className="font-semibold break-words">{message.content}</div>
+              <div className="space-y-2">
+                <div className="font-semibold break-words">{message.content}</div>
+                {message.files && renderFileAttachments(message.files)}
+              </div>
             ) : (
               <div className="space-y-2">
-                {renderStructuredContent(message.content)}
+                {renderStructuredContent(message.content, isAuthenticated)}
               </div>
             )}
           </div>

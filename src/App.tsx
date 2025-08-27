@@ -70,19 +70,26 @@ function App() {
       id: Date.now().toString(),
       role: 'user',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      files: chatState.uploadedFiles.length > 0 ? [...chatState.uploadedFiles] : undefined
     };
 
     setChatState(prev => ({
       ...prev,
       messages: [...prev.messages, userMessage],
-      isLoading: true
+      isLoading: true,
+      uploadedFiles: [] // Clear uploaded files after sending
     }));
 
     setSidebarOpen(false);
 
     try {
-      const aiResponse = await generateResponse(content, chatState.selectedRole);
+      const aiResponse = await generateResponse(
+        content, 
+        chatState.selectedRole, 
+        isAuthenticated,
+        chatState.uploadedFiles
+      );
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -137,12 +144,26 @@ function App() {
     setChatState(prev => ({
       ...prev,
       messages: [],
-      isLoading: false
+      isLoading: false,
+      uploadedFiles: []
     }));
     setCurrentChatId(null);
     setSidebarOpen(false);
   };
 
+  const handleFileUpload = (files: FileUpload[]) => {
+    setChatState(prev => ({
+      ...prev,
+      uploadedFiles: [...prev.uploadedFiles, ...files]
+    }));
+  };
+
+  const handleRemoveFile = (fileId: string) => {
+    setChatState(prev => ({
+      ...prev,
+      uploadedFiles: prev.uploadedFiles.filter(f => f.id !== fileId)
+    }));
+  };
   const clearError = () => setError(null);
 
   if (showLogin && !isAuthenticated) {
@@ -265,6 +286,9 @@ function App() {
               onSend={handleSendMessage}
               isLoading={chatState.isLoading || !!error}
               placeholder={`Ask about cement plant operations (${chatState.selectedRole} expertise)...`}
+              onFileUpload={isAuthenticated ? handleFileUpload : undefined}
+              uploadedFiles={chatState.uploadedFiles}
+              onRemoveFile={isAuthenticated ? handleRemoveFile : undefined}
             />
           </div>
         </div>
