@@ -65,6 +65,10 @@ function App() {
     setShowAuth(false);
   };
 
+  const handleProfileClick = () => {
+    setShowProfile(true);
+  };
+
   const handleSendMessage = async (content: string) => {
     if (!import.meta.env.VITE_GEMINI_API_KEY) {
       setError('GEMINI_API_KEY is not configured. Please set VITE_GEMINI_API_KEY in your environment variables.');
@@ -206,6 +210,7 @@ function App() {
           <Header
             onMenuClick={() => setSidebarOpen(!sidebarOpen)}
             selectedRole={chatState.selectedRole}
+            onProfileClick={handleProfileClick}
           />
 
           {/* Messages Container - Scrollable */}

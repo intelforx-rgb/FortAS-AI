@@ -8,7 +8,13 @@ interface HeaderProps {
   selectedRole: string;
 }
 
-export default function Header({ onMenuClick, selectedRole }: HeaderProps) {
+interface HeaderProps {
+  onMenuClick: () => void;
+  selectedRole: string;
+  onProfileClick?: () => void;
+}
+
+export default function Header({ onMenuClick, selectedRole, onProfileClick }: HeaderProps) {
   const { user, logout, isAuthenticated } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
 
@@ -48,7 +54,10 @@ export default function Header({ onMenuClick, selectedRole }: HeaderProps) {
           
           {isAuthenticated && user && (
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700">
+              <button
+                onClick={onProfileClick}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
                 <div className="relative">
                   <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                   {user.membershipType === 'Premium' && (
@@ -58,7 +67,7 @@ export default function Header({ onMenuClick, selectedRole }: HeaderProps) {
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   {user.fullName}
                 </span>
-              </div>
+              </button>
               <button
                 onClick={logout}
                 className="px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"

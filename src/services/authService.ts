@@ -124,7 +124,7 @@ export class AuthService {
   }
 
   // Login user
-  static async login(credentials: LoginData, rememberMe: boolean = false): Promise<User | null> {
+  static async login(credentials: LoginData): Promise<User | null> {
     this.loadUsers();
     
     const user = this.users.get(credentials.emailOrMobile);

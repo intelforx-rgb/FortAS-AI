@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const user = await AuthService.login(credentials, rememberMe);
+      const user = await AuthService.login(credentials);
       if (user) {
         setAuthState({
           user,

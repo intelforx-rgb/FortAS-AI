@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Settings, Crown, BarChart3, FileText, MessageSquare, X, Save, Eye, EyeOff } from 'lucide-react';
+import { User, Settings, Crown, BarChart3, FileText, MessageSquare, X, Save } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../types';
 
