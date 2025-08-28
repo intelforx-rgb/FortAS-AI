@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Factory } from 'lucide-react';
-import { Header } from './components/Header';
+import Header from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
