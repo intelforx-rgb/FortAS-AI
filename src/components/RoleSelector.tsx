@@ -64,17 +64,24 @@ const roles: {
     icon: <Bot size={18} />, 
     color: 'border-purple-500 bg-purple-50 text-purple-700',
     description: 'General purpose AI for any questions',
-    requiresAuth: true
+    requiresAuth: true,
+    requiresPremium: true
   },
 ];
 
 export const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRoleChange }) => {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  
+  const isPremium = user?.membershipType === 'Premium';
 
   return (
     <div className="space-y-2">
       {roles
-        .filter(role => !role.requiresAuth || isAuthenticated)
+        .filter(role => {
+          if (role.requiresAuth && !isAuthenticated) return false;
+          if (role.requiresPremium && !isPremium) return false;
+          return true;
+        })
         .map((role) => (
           <button
             key={role.value}

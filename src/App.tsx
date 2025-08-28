@@ -8,11 +8,13 @@ import { LoadingMessage } from './components/LoadingMessage';
 import { ErrorMessage } from './components/ErrorMessage';
 import { LoginScreen } from './components/LoginScreen';
 import { AuthScreen } from './components/AuthScreen';
+import { UserProfile } from './components/UserProfile';
 import { useAuth } from './contexts/AuthContext';
 import { useChatHistory } from './contexts/ChatHistoryContext';
 import { useTheme } from './contexts/ThemeContext';
+import { AuthService } from './services/authService';
 import { generateResponse } from './utils/gemini';
-import type { Message, UserRole, ChatState, ChatHistory } from './types';
+import type { Message, UserRole, ChatState, ChatHistory, FileUpload } from './types';
 
 function App() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -20,6 +22,7 @@ function App() {
   const { isDarkMode } = useTheme();
   const [showLogin, setShowLogin] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isLoading: false,
@@ -29,6 +32,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const isPremium = user?.membershipType === 'Premium';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -88,7 +93,8 @@ function App() {
         content, 
         chatState.selectedRole, 
         isAuthenticated,
-        chatState.uploadedFiles
+        chatState.uploadedFiles,
+        isPremium
       );
       
       const assistantMessage: Message = {
@@ -103,6 +109,11 @@ function App() {
         messages: [...prev.messages, assistantMessage],
         isLoading: false
       }));
+      
+      // Update activity stats for premium users
+      if (user && isPremium) {
+        AuthService.updateActivityStats(user.id, 'report');
+      }
     } catch (err) {
       setChatState(prev => ({ ...prev, isLoading: false }));
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -196,6 +207,7 @@ function App() {
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
             selectedRole={chatState.selectedRole}
+            onOpenProfile={() => setShowProfile(true)}
           />
 
           {/* Messages Container - Scrollable */}
@@ -217,7 +229,11 @@ function App() {
                   <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Welcome to FortAS AI</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto text-lg leading-relaxed">
                     AI-powered Industrial Plant Operations, Safety & Efficiency Expert — your trusted partner in building and optimizing world-class industrial plants.
-                    {isAuthenticated && <span className="text-green-600 dark:text-green-400 font-semibold"><br/>✅ You have access to General AI mode and chat history!</span>}
+                    {isAuthenticated && (
+                      <span className={`font-semibold ${isPremium ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+                        <br/>✅ {isPremium ? 'Premium Member: Full AI features & file uploads!' : 'Free Member: Basic AI chat available!'}
+                      </span>
+                    )}
                   </p>
                   <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 shadow-lg">
                     <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-6">🔧 Available Expertise Areas:</h4>
@@ -254,7 +270,9 @@ function App() {
                         <div className="text-left space-y-3 sm:col-span-2">
                           <div className="flex items-center gap-3">
                             <div className="w-3 h-3 bg-purple-500 rounded-full flex-shrink-0"></div>
-                            <p className="text-gray-700 dark:text-gray-300 font-semibold">🤖 General AI Assistant</p>
+                            <p className="text-gray-700 dark:text-gray-300 font-semibold">
+                              🤖 General AI Assistant {isPremium ? '' : '(Premium Only)'}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -262,7 +280,14 @@ function App() {
                     {!isAuthenticated && (
                       <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
                         <p className="text-yellow-800 dark:text-yellow-200 font-semibold text-sm">
-                          🔓 Login to unlock General AI mode, file uploads, and chat history!
+                          🔓 Login to unlock advanced features and chat history!
+                        </p>
+                      </div>
+                    )}
+                    {isAuthenticated && !isPremium && (
+                      <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
+                        <p className="text-yellow-800 dark:text-yellow-200 font-semibold text-sm">
+                          👑 Upgrade to Premium for file uploads, advanced AI responses, and detailed reports!
                         </p>
                       </div>
                     )}
@@ -286,13 +311,19 @@ function App() {
               onSend={handleSendMessage}
               isLoading={chatState.isLoading || !!error}
               placeholder={`Ask about plant operations (${chatState.selectedRole} expertise)...`}
-              onFileUpload={isAuthenticated ? handleFileUpload : undefined}
+              onFileUpload={isPremium ? handleFileUpload : undefined}
               uploadedFiles={chatState.uploadedFiles}
-              onRemoveFile={isAuthenticated ? handleRemoveFile : undefined}
+              onRemoveFile={isPremium ? handleRemoveFile : undefined}
             />
           </div>
         </div>
       </div>
+      
+      {/* User Profile Modal */}
+      <UserProfile 
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
+      />
     </div>
   );
 }

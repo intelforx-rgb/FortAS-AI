@@ -1,28 +1,41 @@
 import React, { useState } from 'react';
 import { Send, Mic, Paperclip, X, FileText, Image } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { AuthService } from '../services/authService';
 import type { FileUpload } from '../types';
 interface ChatInputProps {
   onSend: (message: string) => void;
-  onSendWithFiles: (message: string, files: FileUpload[]) => void;
   isLoading: boolean;
   placeholder?: string;
+  onFileUpload?: (files: FileUpload[]) => void;
+  uploadedFiles?: FileUpload[];
+  onRemoveFile?: (fileId: string) => void;
 }
 export const ChatInput: React.FC<ChatInputProps> = ({ 
   onSend, 
-  onSendWithFiles, 
   isLoading, 
-  placeholder 
+  placeholder,
+  onFileUpload,
+  uploadedFiles = [],
+  onRemoveFile
 }) => {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [input, setInput] = useState('');
-  const [uploadedFiles, setUploadedFiles] = useState<FileUpload[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
+  
+  const isPremium = user?.membershipType === 'Premium';
+  const canUploadFiles = isAuthenticated && isPremium;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isLoading) {
       onSend(input.trim());
       setInput('');
+      
+      // Update activity stats
+      if (user) {
+        AuthService.updateActivityStats(user.id, 'chat');
+      }
     }
   };
 
@@ -33,10 +46,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleFiles = async (files: File[]) => {
-    if (!isAuthenticated) return;
+    if (!canUploadFiles) return;
 
     const validFiles = files.filter(file => {
-      const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf';
+      const isValidType = file.type.startsWith('image/') || 
+                         file.type === 'application/pdf' ||
+                         file.type.includes('spreadsheet') ||
+                         file.type.includes('excel');
       const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
       return isValidType && isValidSize;
     });
@@ -62,12 +78,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       })
     );
 
-    setUploadedFiles(prev => [...prev, ...fileUploads]);
+    if (onFileUpload) {
+      onFileUpload(fileUploads);
+    }
+    
+    // Update activity stats
+    if (user) {
+      AuthService.updateActivityStats(user.id, 'file');
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    if (isAuthenticated) {
+    if (canUploadFiles) {
       setIsDragOver(true);
     }
   };
@@ -80,20 +103,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    if (isAuthenticated) {
+    if (canUploadFiles) {
       const files = Array.from(e.dataTransfer.files);
       handleFiles(files);
     }
   };
 
-  const onRemoveFile = (fileId: string) => {
-    setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
-  };
-
   return (
     <div className="space-y-3">
       {/* Uploaded Files Display */}
-      {isAuthenticated && uploadedFiles.length > 0 && (
+      {canUploadFiles && uploadedFiles.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {uploadedFiles.map((file) => (
             <div
@@ -103,14 +122,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               <span className="text-sm font-medium text-blue-700 dark:text-blue-300 truncate max-w-32">
                 {file.name}
               </span>
-              <button
-                onClick={() => onRemoveFile(file.id)}
-                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200"
-              >
-                <X size={14} />
-              </button>
+              {onRemoveFile && (
+                <button
+                  onClick={() => onRemoveFile(file.id)}
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Premium Feature Notice for Free Users */}
+      {isAuthenticated && !isPremium && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3">
+          <p className="text-yellow-800 dark:text-yellow-200 text-sm font-semibold">
+            🔒 Upgrade to Premium to upload files and get advanced AI responses
+          </p>
         </div>
       )}
 
@@ -136,20 +166,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           />
           
           {/* File Upload Button (Authenticated Users Only) */}
-          {isAuthenticated && (
+          {canUploadFiles && (
             <>
               <input
                 type="file"
                 id="file-upload"
                 multiple
-                accept="image/*,.pdf"
+                accept="image/*,.pdf,.xlsx,.xls,.csv"
                 onChange={handleFileSelect}
                 className="hidden"
               />
               <label
                 htmlFor="file-upload"
                 className="absolute right-16 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
-                title="Upload files (PDF, Images)"
+                title="Upload files (PDF, Images, Excel)"
               >
                 <Paperclip size={16} />
               </label>
@@ -179,7 +209,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       </form>
 
       {/* Drag & Drop Overlay */}
-      {isDragOver && isAuthenticated && (
+      {isDragOver && canUploadFiles && (
         <div className="absolute inset-0 bg-blue-500/10 border-2 border-dashed border-blue-500 rounded-xl flex items-center justify-center pointer-events-none">
           <div className="text-blue-600 dark:text-blue-400 font-semibold">
             Drop files here to upload

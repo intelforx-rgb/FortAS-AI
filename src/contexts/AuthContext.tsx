@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthService } from '../services/authService';
-import type { User, AuthState, RegisterData, LoginData } from '../types';
+import type { User, AuthState, RegisterData, LoginData, UserProfile, PasswordResetData } from '../types';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginData) => Promise<boolean>;
@@ -8,6 +8,10 @@ interface AuthContextType extends AuthState {
   logout: () => void;
   sendOTP: (mobile: string) => Promise<{ success: boolean; message: string; otp?: string }>;
   verifyOTP: (mobile: string, otp: string) => Promise<boolean>;
+  sendPasswordResetOTP: (email: string) => Promise<{ success: boolean; message: string; otp?: string }>;
+  resetPassword: (resetData: PasswordResetData) => Promise<boolean>;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
+  upgradeToPremium: () => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -48,13 +52,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const login = async (credentials: LoginData): Promise<boolean> => {
+  const login = async (credentials: LoginData, rememberMe: boolean = false): Promise<boolean> => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const user = await AuthService.login(credentials);
+      const user = await AuthService.login(credentials, rememberMe);
       if (user) {
-        AuthService.saveCurrentUser(user);
         setAuthState({
           user,
           isAuthenticated: true,
@@ -103,6 +106,97 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const sendPasswordResetOTP = async (email: string) => {
+    try {
+      const response = await AuthService.sendOTP(email, 'reset');
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to send reset OTP. Please try again.'
+      };
+    }
+  };
+
+  const resetPassword = async (resetData: PasswordResetData): Promise<boolean> => {
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const success = await AuthService.resetPassword(resetData);
+      if (success) {
+        setAuthState(prev => ({ ...prev, isLoading: false }));
+        return true;
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: 'Password reset failed. Please try again.'
+        }));
+        return false;
+      }
+    } catch (error) {
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Password reset failed. Please try again.'
+      }));
+      return false;
+    }
+  };
+
+  const updateProfile = async (updates: Partial<UserProfile>): Promise<boolean> => {
+    if (!authState.user) return false;
+    
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const updatedUser = await AuthService.updateProfile(authState.user.id, updates);
+      if (updatedUser) {
+        setAuthState(prev => ({
+          ...prev,
+          user: updatedUser,
+          isLoading: false
+        }));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Profile update failed. Please try again.'
+      }));
+      return false;
+    }
+  };
+
+  const upgradeToPremium = async (): Promise<boolean> => {
+    if (!authState.user) return false;
+    
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const success = await AuthService.upgradeToPremium(authState.user.id);
+      if (success) {
+        const updatedUser = { ...authState.user, membershipType: 'Premium' as const };
+        setAuthState(prev => ({
+          ...prev,
+          user: updatedUser,
+          isLoading: false
+        }));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Upgrade failed. Please try again.'
+      }));
+      return false;
+    }
+  };
+
   const logout = () => {
     AuthService.logout();
     setAuthState({
@@ -144,6 +238,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     sendOTP,
     verifyOTP,
+    sendPasswordResetOTP,
+    resetPassword,
+    updateProfile,
+    upgradeToPremium,
     clearError
   };
 

@@ -22,6 +22,15 @@ export interface User {
   mobile: string;
   isAuthenticated: boolean;
   registrationDate: Date;
+  membershipType: 'Free' | 'Premium';
+  preferredRole?: UserRole | 'General AI';
+  profilePicture?: string;
+  lastLoginDate?: Date;
+  activityStats?: {
+    totalChats: number;
+    filesUploaded: number;
+    reportsGenerated: number;
+  };
 }
 
 export interface OTPResponse {
@@ -61,6 +70,34 @@ export interface FileUpload {
   content: string | ArrayBuffer;
   url?: string;
   uploadDate: Date;
+}
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  membershipType: 'Free' | 'Premium';
+  preferredRole?: UserRole | 'General AI';
+  profilePicture?: string;
+  registrationDate: Date;
+  lastLoginDate?: Date;
+  activityStats: {
+    totalChats: number;
+    filesUploaded: number;
+    reportsGenerated: number;
+  };
+  settings: {
+    autoLogout: boolean;
+    rememberMe: boolean;
+    notifications: boolean;
+  };
+}
+
+export interface PasswordResetData {
+  email: string;
+  newPassword: string;
+  otp: string;
 }
 
 export interface RegisterData {

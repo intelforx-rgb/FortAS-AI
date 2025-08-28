@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, X, Factory, User, Moon, Sun } from 'lucide-react';
+import { Menu, X, Factory, User, Moon, Sun, Crown, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import type { UserRole } from '../types';
@@ -8,11 +8,14 @@ interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   selectedRole: UserRole | 'General AI';
+  onOpenProfile: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen, selectedRole }) => {
+export const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen, selectedRole, onOpenProfile }) => {
   const { user, isAuthenticated } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
+  
+  const isPremium = user?.membershipType === 'Premium';
 
   return (
     <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 shadow-sm flex-shrink-0">
@@ -65,11 +68,29 @@ export const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen, sel
             {/* Status Indicator */}
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hidden sm:inline">
-                Online
-              </span>
-            </div>
-
+              <div className="flex items-center gap-2">
+                <div className="text-right hidden md:block">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {user.fullName}
+                    </span>
+                    {isPremium && <Crown className="text-yellow-500" size={14} />}
+                  </div>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {isPremium ? 'Premium' : 'Free'} Member
+                  </span>
+                </div>
+                <button
+                  onClick={onOpenProfile}
+                  className="relative w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center hover:shadow-lg transition-all"
+                >
+                  <User className="text-white" size={16} />
+                  {isPremium && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <Crown className="text-white" size={8} />
+                    </div>
+                  )}
+                </button>
             {/* User Info */}
             {isAuthenticated && user ? (
               <div className="flex items-center gap-2">

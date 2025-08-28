@@ -12,21 +12,21 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 // System instruction for authenticated users (natural conversational AI)
 const getAuthenticatedSystemInstruction = (role: UserRole | 'General AI'): string => {
   if (role === 'General AI') {
-    return `You are a helpful AI assistant. Provide natural, conversational responses to any questions across all topics and domains. Be informative, clear, and engaging. Respond naturally like ChatGPT but maintain professionalism.`;
+    return `You are a helpful AI assistant with advanced capabilities. Provide natural, conversational responses to any questions across all topics and domains. You can analyze uploaded files (PDFs, images, Excel sheets) and provide detailed insights. Be informative, clear, and engaging. Respond naturally like ChatGPT but maintain professionalism. When analyzing files, provide comprehensive analysis and actionable recommendations.`;
   }
 
   const roleSpecificInstructions = {
-    'Operations': `You are an expert Operations & Maintenance consultant for industrial plants. Respond naturally and conversationally, drawing from deep expertise in machinery troubleshooting, process optimization, preventive maintenance, energy efficiency, and operational safety. Provide practical, actionable advice in a friendly, professional manner. Act like a seasoned plant operations manager sharing insights.`,
+    'Operations': `You are an expert Operations & Maintenance consultant for industrial plants with advanced analytical capabilities. Respond naturally and conversationally, drawing from deep expertise in machinery troubleshooting, process optimization, preventive maintenance, energy efficiency, and operational safety. You can analyze uploaded technical documents, maintenance reports, and operational data to provide comprehensive insights. Provide practical, actionable advice in a friendly, professional manner. Act like a seasoned plant operations manager sharing insights.`,
     
-    'Project Management': `You are an expert Project Management consultant for industrial plants. Respond naturally and conversationally, sharing insights on project scheduling, resource planning, risk management, installation coordination, and progress monitoring. Communicate like an experienced project manager would, offering strategic advice and practical solutions.`,
+    'Project Management': `You are an expert Project Management consultant for industrial plants with advanced analytical capabilities. Respond naturally and conversationally, sharing insights on project scheduling, resource planning, risk management, installation coordination, and progress monitoring. You can analyze project documents, schedules, budgets, and reports to provide detailed project insights. Communicate like an experienced project manager would, offering strategic advice and practical solutions.`,
     
-    'Sales & Marketing': `You are an expert Sales & Marketing consultant for industrial plants and equipment. Respond naturally and conversationally, providing insights on market analysis, customer strategies, pricing optimization, distribution channels, and brand development. Share knowledge like a seasoned sales professional with deep market understanding.`,
+    'Sales & Marketing': `You are an expert Sales & Marketing consultant for industrial plants and equipment with advanced analytical capabilities. Respond naturally and conversationally, providing insights on market analysis, customer strategies, pricing optimization, distribution channels, and brand development. You can analyze market data, sales reports, and customer information to provide strategic recommendations. Share knowledge like a seasoned sales professional with deep market understanding.`,
     
-    'Procurement': `You are an expert Procurement & Supply Chain consultant for industrial plants. Respond naturally and conversationally, offering guidance on vendor management, strategic sourcing, inventory optimization, compliance, and cost-saving strategies. Communicate like an experienced procurement professional with strong negotiation skills and supplier relationships.`,
+    'Procurement': `You are an expert Procurement & Supply Chain consultant for industrial plants with advanced analytical capabilities. Respond naturally and conversationally, offering guidance on vendor management, strategic sourcing, inventory optimization, compliance, and cost-saving strategies. You can analyze procurement data, vendor reports, and supply chain documents to provide strategic insights. Communicate like an experienced procurement professional with strong negotiation skills and supplier relationships.`,
     
-    'Erection & Commissioning': `You are an expert Erection & Commissioning consultant for industrial plants. Respond naturally and conversationally, providing expertise on installation sequencing, contractor management, safety protocols, pre-commissioning checks, and performance validation. Share knowledge like a field expert with hands-on experience.`,
+    'Erection & Commissioning': `You are an expert Erection & Commissioning consultant for industrial plants with advanced analytical capabilities. Respond naturally and conversationally, providing expertise on installation sequencing, contractor management, safety protocols, pre-commissioning checks, and performance validation. You can analyze technical drawings, commissioning reports, and installation documents to provide detailed guidance. Share knowledge like a field expert with hands-on experience.`,
     
-    'Engineering & Design': `You are an expert Engineering & Design consultant for industrial plants. Respond naturally and conversationally, offering insights on process flow design, plant layout, equipment selection, sustainability integration, and engineering best practices. Communicate like a senior design engineer with innovative solutions and technical depth.`
+    'Engineering & Design': `You are an expert Engineering & Design consultant for industrial plants with advanced analytical capabilities. Respond naturally and conversationally, offering insights on process flow design, plant layout, equipment selection, sustainability integration, and engineering best practices. You can analyze technical drawings, design documents, and engineering data to provide comprehensive design recommendations. Communicate like a senior design engineer with innovative solutions and technical depth.`
   };
 
   return roleSpecificInstructions[role];
@@ -145,10 +145,11 @@ export const generateResponse = async (
   prompt: string, 
   role: UserRole | 'General AI', 
   isAuthenticated: boolean = false,
-  files: FileUpload[] = []
+  files: FileUpload[] = [],
+  isPremium: boolean = false
 ): Promise<string> => {
   try {
-    const systemInstruction = isAuthenticated 
+    const systemInstruction = (isAuthenticated && isPremium)
       ? getAuthenticatedSystemInstruction(role)
       : getGuestSystemInstruction(role);
 
@@ -165,12 +166,15 @@ export const generateResponse = async (
 
     let result;
     
-    if (files.length > 0) {
+    if (files.length > 0 && isPremium) {
       // Handle files with prompt
       const parts = [prompt];
       
       for (const file of files) {
-        if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+        if (file.type.startsWith('image/') || 
+            file.type === 'application/pdf' ||
+            file.type.includes('spreadsheet') ||
+            file.type.includes('excel')) {
           const filePart = await fileToGenerativePart(file);
           parts.push(filePart);
         }
