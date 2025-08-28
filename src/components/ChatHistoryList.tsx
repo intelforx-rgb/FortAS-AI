@@ -23,7 +23,7 @@ export const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ history, onSel
                          text-gray-800 text-sm shadow-sm transition"
             >
               {chat.title}
-            </button>
+            </buttoo>
           ))
         )}
       </div>
