@@ -64,8 +64,7 @@ const roles: {
     icon: <Bot size={18} />, 
     color: 'border-purple-500 bg-purple-50 text-purple-700',
     description: 'General purpose AI for any questions',
-    requiresAuth: true,
-    requiresPremium: true
+    requiresAuth: true
   },
 ];
 
@@ -79,16 +78,18 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRole
       {roles
         .filter(role => {
           if (role.requiresAuth && !isAuthenticated) return false;
-          if (role.requiresPremium && !isPremium) return false;
           return true;
         })
         .map((role) => (
           <button
             key={role.value}
             onClick={() => onRoleChange(role.value)}
+            disabled={role.value === 'General AI' && !isPremium}
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300 border ${
               selectedRole === role.value
                 ? `${role.color} shadow-md`
+                : role.value === 'General AI' && !isPremium
+                ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50'
                 : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
@@ -97,7 +98,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onRole
             </div>
             <div className="text-left flex-1 min-w-0">
               <div className={`font-semibold text-xs ${selectedRole === role.value ? '' : 'text-gray-900 dark:text-white'} truncate`}>
-                {role.label}
+                {role.label} {role.value === 'General AI' && !isPremium && '(Premium)'}
               </div>
               <div className={`text-xs ${selectedRole === role.value ? 'opacity-80' : 'text-gray-500 dark:text-gray-400'} truncate`}>
                 {role.description}

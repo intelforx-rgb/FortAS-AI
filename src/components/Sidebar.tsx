@@ -159,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </h4>
                 <ChatHistoryList 
                   history={histories}
-                  onSelect={onLoadChat}
+                  onSelect={(history) => onLoadChat(history)}
                 />
               </div>
             )}

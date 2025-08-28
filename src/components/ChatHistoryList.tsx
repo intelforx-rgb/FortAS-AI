@@ -2,7 +2,7 @@ import React from "react";
 
 interface ChatHistoryListProps {
   history: { id: string; title: string }[];
-  onSelect: (id: string) => void;
+  onSelect: (history: any) => void;
 }
 
 export const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ history, onSelect }) => {
@@ -18,7 +18,7 @@ export const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ history, onSel
           history.map((chat) => (
             <button
               key={chat.id}
-              onClick={() => onSelect(chat.id)}
+              onClick={() => onSelect(chat)}
               className="w-full text-left px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 
                          text-gray-800 text-sm shadow-sm transition"
             >

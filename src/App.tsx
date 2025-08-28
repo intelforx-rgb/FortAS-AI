@@ -204,10 +204,8 @@ function App() {
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           <Header
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
             selectedRole={chatState.selectedRole}
-            onOpenProfile={() => setShowProfile(true)}
           />
 
           {/* Messages Container - Scrollable */}
